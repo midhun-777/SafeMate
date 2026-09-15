@@ -1,0 +1,111 @@
+# SafeMate — Comprehensive Multi-Platform Git Ignore
+# Universal Engineering Rule #7: Never expose secrets, keys, or credentials.
+
+# --------------------------------------------------
+# Secrets & Environment Configuration
+# --------------------------------------------------
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.pfx
+*.p12
+*.crt
+*.cert
+service-account*.json
+supabase-service-key*
+google-services.json
+GoogleService-Info.plist
+
+# --------------------------------------------------
+# Android Signing & Keystores
+# --------------------------------------------------
+*.jks
+*.keystore
+key.properties
+signing.properties
+
+# --------------------------------------------------
+# Flutter / Dart Build & Cache
+# --------------------------------------------------
+.dart_tool/
+.packages
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+*.lock.bak
+flutter_*.png
+
+# --------------------------------------------------
+# Android Build Artifacts
+# --------------------------------------------------
+android/.gradle/
+android/app/build/
+android/app/src/main/assets/
+android/captures/
+android/local.properties
+android/GeneratedPluginRegistrant.java
+
+# --------------------------------------------------
+# iOS Build Artifacts
+# --------------------------------------------------
+ios/.generated/
+ios/Flutter/App.framework
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+ios/Flutter/Generated.xcconfig
+ios/Flutter/app.flx
+ios/Flutter/ephemeral/
+ios/Pods/
+ios/Podfile.lock
+ios/.symlinks/
+ios/profile/
+ios/Debug/
+ios/Release/
+
+# --------------------------------------------------
+# Windows Desktop Build Artifacts
+# --------------------------------------------------
+windows/flutter/ephemeral/
+windows/flutter/generated_plugin_registrant.cc
+windows/flutter/generated_plugin_registrant.h
+windows/flutter/generated_plugins.cmake
+
+# --------------------------------------------------
+# IDEs & Editor Configuration
+# --------------------------------------------------
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+.project
+.classpath
+.cproject
+.settings/
+*.sublime-project
+*.sublime-workspace
+
+# --------------------------------------------------
+# OS Specific Files
+# --------------------------------------------------
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+[Dd]esktop.ini
+
+# --------------------------------------------------
+# Logs, Temp, and Crash Reports
+# --------------------------------------------------
+*.log
+*.tmp
+*.bak
+*.swp
+*~
