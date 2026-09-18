@@ -21,3 +21,24 @@
 1. **Client-Side Secret Scan**: Automated ripgrep scans confirm zero client API keys, zero JWT secrets, and zero database passwords committed in repository source files.
 2. **ProGuard / R8 Obfuscation**: Android release builds employ ProGuard rules protecting data model reflection and stripping `debugPrint` statements.
 3. **Network Security Config**: Cleartext HTTP traffic is disabled; TLS 1.3 enforced for all Supabase API and Realtime WebSocket connections.
+
+---
+
+## 3. Production Release Build Evidence (P1-2)
+
+- **Build Command**: `flutter build appbundle --release`
+- **Result**: `BUILD SUCCESSFUL` (exit code 0)
+- **Initial Build Duration**: 365.1s (6m 5s)
+- **Incremental Build Duration**: 86.1s (1m 26s)
+- **Generated AAB Path**: `build/app/outputs/bundle/release/app-release.aab`
+- **Package Size**: 54.4 MB (57,055,902 bytes)
+- **Signing Configuration Status**:
+  - `key.properties` dynamically detected in project root via `android/app/build.gradle.kts`.
+  - Secure keystore parameters (`storePassword`, `keyPassword`, `keyAlias`, `storeFile`) consumed when present.
+  - Graceful debug signing fallback enabled for local compilation when `key.properties` is absent.
+  - Template created at `android/key.properties.example`.
+  - `.gitignore` guarantees zero keystore files (`*.jks`, `*.keystore`) or credential properties (`key.properties`) can be committed.
+- **Build Warnings/Errors**:
+  - Warnings: Standard JDK 17 native platform reflection warning (`NativeLibraryLoader`), Java 8 source/target deprecation notices from transitive dependencies.
+  - Errors: **0 compilation or packaging errors**.
+

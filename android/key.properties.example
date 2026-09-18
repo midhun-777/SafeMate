@@ -1,0 +1,9 @@
+# SafeMate Android Release Signing Configuration Template
+# Universal Engineering Rule #7: Never expose secrets, keys, or credentials.
+# Copy this file to key.properties and replace placeholder values with your secure credentials.
+# Do NOT commit key.properties or *.jks files to version control.
+
+storePassword=your_keystore_password_here
+keyPassword=your_key_password_here
+keyAlias=safemate_release_key
+storeFile=/path/to/safemate-release-keystore.jks

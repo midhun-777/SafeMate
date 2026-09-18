@@ -89,3 +89,16 @@ This formal test matrix defines required physical and automated device verificat
 | **SAF-VAL-02** | Check-In Network Recovery | Check-in pending in SQLite | Device regains network | `SyncEngine` uploads check-in with idempotency key; server confirms; status transitions to `'synced'`. | VERIFIED |
 | **SAF-VAL-03** | Location Permission Revoked | SafeTrip journey active | User revokes GPS permission in OS settings | App displays alert; logs check-in with `location_unavailable`; app does not crash. | VERIFIED |
 | **SAF-VAL-04** | Emergency SOS Offline Boundary | Offline | User triggers SOS | App presents offline warning; provides direct emergency phone dialing fallback (112/911); does NOT claim cloud dispatch. | VERIFIED |
+
+---
+
+## 8. Evidence Categorization & Hardware Execution Status
+
+### 1. Evidence Levels
+- **AUTOMATED (Complete)**: 519/519 unit, widget, and state machine tests passing (`flutter test` exit code 0). Complete coverage of offline queue durability, mutation idempotency, network chaos, auth chaos, SQLite recovery, telemetry scrubbing, and security red-team suites.
+- **EMULATOR (Complete)**: Successful compilation of Android Debug APK (`flutter build apk --debug`) and Production Release App Bundle (`flutter build appbundle --release`).
+- **PHYSICAL DEVICE (Pending Hardware Connection)**:
+  - Attached device `ec18fa66cf18` is currently in `offline` status (unauthorized / screen locked / USB debugging disabled).
+  - Physical execution across the 22 real-device test cases requires 2 unlocked, authorized physical hardware devices connected via ADB.
+  - Per Universal Engineering Rules, simulated and automated test passes are **not** substituted for genuine physical hardware evidence.
+
