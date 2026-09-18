@@ -97,8 +97,18 @@ This formal test matrix defines required physical and automated device verificat
 ### 1. Evidence Levels
 - **AUTOMATED (Complete)**: 519/519 unit, widget, and state machine tests passing (`flutter test` exit code 0). Complete coverage of offline queue durability, mutation idempotency, network chaos, auth chaos, SQLite recovery, telemetry scrubbing, and security red-team suites.
 - **EMULATOR (Complete)**: Successful compilation of Android Debug APK (`flutter build apk --debug`) and Production Release App Bundle (`flutter build appbundle --release`).
-- **PHYSICAL DEVICE (Pending Hardware Connection)**:
-  - Attached device `ec18fa66cf18` is currently in `offline` status (unauthorized / screen locked / USB debugging disabled).
-  - Physical execution across the 22 real-device test cases requires 2 unlocked, authorized physical hardware devices connected via ADB.
-  - Per Universal Engineering Rules, simulated and automated test passes are **not** substituted for genuine physical hardware evidence.
+- **PHYSICAL DEVICE 1 (Authorized & Validated)**:
+  - **Device Hardware**: Xiaomi / POCO X4 Pro 5G (`model:2201116PI`, `device:peux`), Android 13 (API 33).
+  - **ADB Connection**: Authorized via Wireless Debugging (`192.168.29.127:42713`, pairing code `127958`, status `device`).
+  - **Package Installation**: Streamed installation of `app-debug.apk` completed with `Success`.
+  - **Application Launch**: Launched `com.safemate.app/.MainActivity` cleanly; Dart VM listening; window focus verified.
+  - **Cold Restart**: Terminated via `am force-stop` (PID cleared), relaunched cleanly with new PID `27413` without crash.
+  - **Background / Foreground**: Transitions to background via `KEYCODE_HOME` and resumes to foreground with task brought to front.
+  - **Incoming Call Interruption**: Handled active incoming Wi-Fi phone call; process paused safely in background with PID `31296` preserved.
+  - **Authentication & Navigation**: Navigated from Welcome screen to OTP verification, authenticated, and rendered Trips Home (`Hello, Traveler`).
+  - **Trip Creation Wizard & Drafts**: Created draft trip ("narasaraopeta" to "Goa", title "holiday"); navigated through Steps 1, 2, and 3; verified field state preservation across navigation.
+  - **Battery Optimization Policy**: Complies with standard Android Doze rules; app is not whitelisted from OS power management.
+- **PHYSICAL DEVICE 2 (Pending Connection)**:
+  - Phase 12.5 gate mandates at least 2 physical hardware devices with different Android configurations. Device 2 connection is pending.
+
 
