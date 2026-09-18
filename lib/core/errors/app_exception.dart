@@ -25,3 +25,8 @@ class NetworkException extends AppException {
 class ValidationException extends AppException {
   const ValidationException(super.message, {super.code, super.details});
 }
+
+class DatabaseException extends AppException {
+  const DatabaseException(super.message, {super.code, super.details});
+}
+

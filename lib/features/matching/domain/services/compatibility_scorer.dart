@@ -1,5 +1,6 @@
 import '../models/match_result.dart';
 import '../../../trips/domain/models/trip.dart';
+import '../../../trips/domain/models/trip_transport.dart';
 
 /// Deterministic Compatibility Scorer for SafeMate.
 /// Universal Engineering Rule #17:
@@ -58,13 +59,14 @@ class CompatibilityScorer {
     }
 
     // 4. Transport Mode Alignment (Up to 15 points)
-    final bool transportMatch = tripA.transportMode == 'flexible' ||
-        tripB.transportMode == 'flexible' ||
+    final bool transportMatch = tripA.transportMode == TripTransport.flexible ||
+        tripB.transportMode == TripTransport.flexible ||
         tripA.transportMode == tripB.transportMode;
     if (transportMatch) {
       totalScore += 15;
-      if (tripA.transportMode == tripB.transportMode && tripA.transportMode != 'flexible') {
-        reasons.add('Same preferred transport: ${tripA.transportMode}');
+      if (tripA.transportMode == tripB.transportMode &&
+          tripA.transportMode != TripTransport.flexible) {
+        reasons.add('Same preferred transport: ${tripA.transportMode.label}');
       } else {
         reasons.add('Compatible travel transport');
       }
@@ -77,16 +79,17 @@ class CompatibilityScorer {
     final bool purposeMatch = tripA.tripPurpose == tripB.tripPurpose;
     if (purposeMatch) {
       totalScore += 15;
-      reasons.add('Shared trip purpose: ${tripA.tripPurpose}');
+      reasons.add('Shared trip purpose: ${tripA.tripPurpose.label}');
       breakdown['purpose_points'] = 15;
     } else {
       breakdown['purpose_points'] = 0;
     }
 
+
     // Bound score strictly 0..100
     final int finalScore = totalScore.clamp(0, 100);
 
-    return MatchResult(
+    return MatchResult.legacy(
       id: matchId,
       userId: tripA.userId,
       candidateId: tripB.userId,

@@ -1,6 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:safemate/features/matching/domain/services/compatibility_scorer.dart';
 import 'package:safemate/features/trips/domain/models/trip.dart';
+import 'package:safemate/features/trips/domain/models/trip_purpose.dart';
+import 'package:safemate/features/trips/domain/models/trip_transport.dart';
 
 void main() {
   group('CompatibilityScorer Tests', () {
@@ -13,8 +15,8 @@ void main() {
         destination: 'Tokyo',
         startDate: DateTime(2026, 10, 1),
         endDate: DateTime(2026, 10, 10),
-        transportMode: 'flight',
-        tripPurpose: 'cultural',
+        transportMode: TripTransport.flight,
+        tripPurpose: TripPurpose.exploration,
       );
 
       final tripB = Trip(
@@ -25,8 +27,8 @@ void main() {
         destination: 'Tokyo',
         startDate: DateTime(2026, 10, 2),
         endDate: DateTime(2026, 10, 9),
-        transportMode: 'flight',
-        tripPurpose: 'cultural',
+        transportMode: TripTransport.flight,
+        tripPurpose: TripPurpose.exploration,
       );
 
       final result = CompatibilityScorer.calculate(
@@ -39,9 +41,10 @@ void main() {
       expect(result.compatibilityScore, equals(100));
       expect(result.matchReasons, contains('Same destination: Tokyo'));
       expect(result.matchReasons, contains('Same starting point: San Francisco'));
-      expect(result.matchReasons, contains('Same preferred transport: flight'));
-      expect(result.matchReasons, contains('Shared trip purpose: cultural'));
+      expect(result.matchReasons, contains('Same preferred transport: ✈ Flight'));
+      expect(result.matchReasons, contains('Shared trip purpose: 🗺 Exploration'));
       expect(result.scoreBreakdown['destination_points'], equals(30));
+
       expect(result.scoreBreakdown['date_overlap_points'], equals(25));
     });
 
@@ -54,8 +57,8 @@ void main() {
         destination: 'Rome',
         startDate: DateTime(2026, 6, 1),
         endDate: DateTime(2026, 6, 7),
-        transportMode: 'flight',
-        tripPurpose: 'leisure',
+        transportMode: TripTransport.flight,
+        tripPurpose: TripPurpose.vacation,
       );
 
       final tripB = Trip(
@@ -66,8 +69,8 @@ void main() {
         destination: 'Berlin',
         startDate: DateTime(2026, 9, 1),
         endDate: DateTime(2026, 9, 7),
-        transportMode: 'train',
-        tripPurpose: 'workation',
+        transportMode: TripTransport.train,
+        tripPurpose: TripPurpose.work,
       );
 
       final result = CompatibilityScorer.calculate(

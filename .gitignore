@@ -109,3 +109,5 @@ Thumbs.db
 *.bak
 *.swp
 *~
+scratch/
+

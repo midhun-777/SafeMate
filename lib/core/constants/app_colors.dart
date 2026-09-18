@@ -13,6 +13,7 @@ class AppColors {
   static const Color primaryDark = Color(0xFF115E59);
   static const Color primaryContainer = Color(0xFFCCFBF1);
   static const Color onPrimaryContainer = Color(0xFF134E4A);
+  static const Color secondaryTeal = primary;
 
   // Secondary Calm Accents (Slate Indigo)
   static const Color secondary = Color(0xFF475569); // Slate Gray
@@ -25,6 +26,7 @@ class AppColors {
   static const Color safetyWarning = Color(0xFFD97706); // Amber Warning (Check-in Due)
   static const Color safetyAlert = Color(0xFFE11D48); // Rose Alert (SOS)
   static const Color safetyNeutral = Color(0xFF6B7280);
+  static const Color error = safetyAlert;
 
   // Background & Surfaces
   static const Color backgroundLight = Color(0xFFF8FAFC);
