@@ -6,11 +6,13 @@ library;
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 
 import '../database/local_data_policy.dart';
 import '../database/local_database_service.dart';
 import '../network/connectivity_service.dart';
+import 'conflict_resolution_controller.dart' show localDatabaseServiceProvider;
 import 'sync_models.dart';
 
 /// Current high-level operational status of the SyncEngine.
@@ -332,3 +334,14 @@ class SyncEngine {
     _statusController.close();
   }
 }
+
+/// Riverpod Provider for SyncEngine singleton.
+final syncEngineProvider = Provider<SyncEngine>((ref) {
+  final localDb = ref.watch(localDatabaseServiceProvider);
+  final engine = SyncEngine(localDb: localDb);
+  ref.onDispose(() {
+    engine.dispose();
+  });
+  return engine;
+});
+

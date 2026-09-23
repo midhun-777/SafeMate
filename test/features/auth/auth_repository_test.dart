@@ -44,6 +44,22 @@ void main() {
       expect(repository.currentSession, isNotNull);
     });
 
+    test('signUpWithEmail followed by signOut and signInWithEmail preserves identical userId', () async {
+      final signUpSession = await repository.signUpWithEmail(
+        email: 'traveler@safemate.test',
+        password: 'ValidPassword123!',
+        displayName: 'Traveler',
+      );
+      final originalUserId = signUpSession.userId;
+      await repository.signOut();
+
+      final signInSession = await repository.signInWithEmail(
+        email: 'traveler@safemate.test',
+        password: 'ValidPassword123!',
+      );
+      expect(signInSession.userId, equals(originalUserId));
+    });
+
     test('signInWithEmail throws AuthException on invalid test credentials', () async {
       expect(
         () => repository.signInWithEmail(

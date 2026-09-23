@@ -3,17 +3,26 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:safemate/core/errors/app_exception.dart';
 import 'package:safemate/features/auth/domain/models/user_profile.dart';
 import 'package:safemate/features/auth/presentation/controllers/auth_controller.dart';
-import 'package:safemate/features/profile/data/repositories/supabase_profile_repository.dart';
-import 'package:safemate/features/profile/domain/models/profile_completion.dart';
-import 'package:safemate/features/profile/domain/models/profile_visibility.dart';
-import 'package:safemate/features/profile/domain/models/travel_personality.dart';
-import 'package:safemate/features/profile/domain/models/travel_preferences.dart';
-import 'package:safemate/features/profile/domain/repositories/profile_repository.dart';
+import '../../../../core/sync/conflict_resolution_controller.dart' show localDatabaseServiceProvider;
+import '../../../../core/sync/sync_engine.dart' show syncEngineProvider;
+import '../../data/repositories/offline_first_profile_repository.dart';
+import '../../data/repositories/supabase_profile_repository.dart';
+import '../../domain/models/profile_completion.dart';
+import '../../domain/models/profile_visibility.dart';
+import '../../domain/models/travel_personality.dart';
+import '../../domain/models/travel_preferences.dart';
+import '../../domain/repositories/profile_repository.dart';
 import 'profile_state.dart';
 
 /// Provider for ProfileRepository.
 final profileRepositoryProvider = Provider<ProfileRepository>((ref) {
-  return SupabaseProfileRepository();
+  final localDb = ref.watch(localDatabaseServiceProvider);
+  final syncEngine = ref.watch(syncEngineProvider);
+  return OfflineFirstProfileRepository(
+    remoteRepo: SupabaseProfileRepository(),
+    localDb: localDb,
+    syncEngine: syncEngine,
+  );
 });
 
 /// Riverpod StateNotifierProvider for ProfileController.

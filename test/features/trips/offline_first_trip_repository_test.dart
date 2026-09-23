@@ -106,5 +106,36 @@ void main() {
       final fromDb = await dbService.getTrip('trip_cached_002');
       expect(fromDb?.status, TripStatus.published);
     });
+
+    test('saveDraft persists draft to SQLite and retrieves it across user session reloads', () async {
+      final draft = Trip(
+        id: 'draft_hill_trip_1',
+        userId: 'dev-user-midhunkota7_gmail_com',
+        title: 'Trip to Hill',
+        origin: 'Satuluru',
+        destination: 'Kodaikanal',
+        startDate: DateTime.now().add(const Duration(days: 2)),
+        endDate: DateTime.now().add(const Duration(days: 9)),
+        status: TripStatus.draft,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      );
+
+      final saved = await offlineRepo.saveDraft(draft);
+      expect(saved.status, TripStatus.draft);
+      expect(saved.destination, 'Kodaikanal');
+
+      // Verify draft in SQLite directly
+      final fromDb = await dbService.getTrip('draft_hill_trip_1');
+      expect(fromDb, isNotNull);
+      expect(fromDb?.destination, equals('Kodaikanal'));
+      expect(fromDb?.status, equals(TripStatus.draft));
+
+      // Simulate relogin: query user trips for midhunkota7
+      final userTrips = await offlineRepo.getUserTrips('dev-user-midhunkota7_gmail_com');
+      expect(userTrips.length, equals(1));
+      expect(userTrips.first.destination, equals('Kodaikanal'));
+      expect(userTrips.first.status, equals(TripStatus.draft));
+    });
   });
 }

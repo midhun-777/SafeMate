@@ -53,6 +53,16 @@ class SupabaseAuthRepository implements AuthRepository {
     return _mapSupabaseUserToSession(user);
   }
 
+  String _mockUserIdForEmail(String email) {
+    final sanitized = email.trim().toLowerCase().replaceAll(RegExp(r'[^a-z0-9]'), '_');
+    return 'dev-user-$sanitized';
+  }
+
+  String _mockUserIdForPhone(String phone) {
+    final sanitized = phone.trim().replaceAll(RegExp(r'[^0-9]'), '');
+    return 'dev-user-phone-$sanitized';
+  }
+
   @override
   Future<UserSession> signUpWithEmail({
     required String email,
@@ -62,15 +72,16 @@ class SupabaseAuthRepository implements AuthRepository {
     final client = _activeClient;
     if (client == null) {
       // Mock mode for local development without live backend
+      final userId = _mockUserIdForEmail(email);
       final mockSession = UserSession(
-        userId: 'dev-user-${DateTime.now().millisecondsSinceEpoch}',
+        userId: userId,
         email: email.trim(),
         role: 'user',
         createdAt: DateTime.now(),
       );
       _devMockSession = mockSession;
-      _devMockProfiles[mockSession.userId] = UserProfile(
-        id: mockSession.userId,
+      _devMockProfiles[userId] = UserProfile(
+        id: userId,
         displayName: displayName.trim(),
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
@@ -119,15 +130,16 @@ class SupabaseAuthRepository implements AuthRepository {
       if (password == 'InvalidPassword1') {
         throw const AuthException('Incorrect email or password. Please try again.');
       }
+      final userId = _mockUserIdForEmail(email);
       final mockSession = UserSession(
-        userId: 'dev-user-signed-in',
+        userId: userId,
         email: email.trim(),
         role: 'user',
         createdAt: DateTime.now(),
       );
       _devMockSession = mockSession;
-      _devMockProfiles[mockSession.userId] ??= UserProfile(
-        id: mockSession.userId,
+      _devMockProfiles[userId] ??= UserProfile(
+        id: userId,
         displayName: email.split('@').first,
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
@@ -194,16 +206,17 @@ class SupabaseAuthRepository implements AuthRepository {
       if (token.trim() != '123456') {
         throw const AuthException('Invalid or expired verification code.');
       }
+      final userId = _mockUserIdForPhone(phone);
       final mockSession = UserSession(
-        userId: 'dev-user-phone',
+        userId: userId,
         email: '',
         phone: phone.trim(),
         role: 'user',
         createdAt: DateTime.now(),
       );
       _devMockSession = mockSession;
-      _devMockProfiles[mockSession.userId] ??= UserProfile(
-        id: mockSession.userId,
+      _devMockProfiles[userId] ??= UserProfile(
+        id: userId,
         displayName: 'Traveler',
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),

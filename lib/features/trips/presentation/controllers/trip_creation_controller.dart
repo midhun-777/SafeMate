@@ -8,6 +8,9 @@ import 'package:safemate/core/errors/app_exception.dart';
 import 'package:safemate/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:safemate/features/profile/domain/models/travel_personality.dart';
 import 'package:safemate/features/profile/domain/models/travel_preferences.dart';
+import '../../../../core/sync/conflict_resolution_controller.dart' show localDatabaseServiceProvider;
+import '../../../../core/sync/sync_engine.dart' show syncEngineProvider;
+import '../../data/repositories/offline_first_trip_repository.dart';
 import '../../data/repositories/supabase_trip_repository.dart';
 import '../../domain/models/trip_budget.dart';
 import '../../domain/models/trip_preferences.dart';
@@ -20,7 +23,13 @@ import 'trip_creation_state.dart';
 
 /// Provider for TripRepository.
 final tripRepositoryProvider = Provider<TripRepository>((ref) {
-  return SupabaseTripRepository();
+  final localDb = ref.watch(localDatabaseServiceProvider);
+  final syncEngine = ref.watch(syncEngineProvider);
+  return OfflineFirstTripRepository(
+    remoteRepo: SupabaseTripRepository(),
+    localDb: localDb,
+    syncEngine: syncEngine,
+  );
 });
 
 /// Riverpod StateNotifierProvider for TripCreationController.

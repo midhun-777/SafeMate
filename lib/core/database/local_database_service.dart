@@ -119,17 +119,21 @@ class SyncRecord {
 
 /// Core service managing local SQLite persistence and schema lifecycle.
 class LocalDatabaseService {
+  static sq.Database? _sharedDatabase;
   sq.Database? _database;
 
   sq.Database get database {
-    final db = _database;
-    if (db == null) {
+    final db = _database ?? _sharedDatabase;
+    if (db == null || !db.isOpen) {
       throw StateError('LocalDatabaseService has not been initialized. Call init() first.');
     }
     return db;
   }
 
-  bool get isInitialized => _database != null;
+  bool get isInitialized {
+    final db = _database ?? _sharedDatabase;
+    return db != null && db.isOpen;
+  }
 
   /// Initializes the SQLite database. Supports optional [customDatabase] or [databaseFactory] for testing.
   Future<void> init({
@@ -137,16 +141,20 @@ class LocalDatabaseService {
     sq.DatabaseFactory? databaseFactory,
     String dbName = 'safemate_local.db',
   }) async {
-    if (_database != null) return;
+    final currentDb = _database ?? _sharedDatabase;
+    if (customDatabase == null && databaseFactory == null && currentDb != null && currentDb.isOpen) {
+      return;
+    }
 
     if (customDatabase != null) {
       _database = customDatabase;
+      _sharedDatabase = customDatabase;
       return;
     }
 
     final factory = databaseFactory ?? sq.databaseFactory;
     final databasesPath = await factory.getDatabasesPath();
-    final path = p.join(databasesPath, dbName);
+    final path = p.isAbsolute(dbName) ? dbName : p.join(databasesPath, dbName);
 
     _database = await factory.openDatabase(
       path,
@@ -162,6 +170,7 @@ class LocalDatabaseService {
         },
       ),
     );
+    _sharedDatabase = _database;
   }
 
   /// Alias for [init] for testing and lifecycle consistency.
@@ -580,9 +589,12 @@ class LocalDatabaseService {
   Future<void> clearUserScopedData(String userId) => purgeUserData(userId);
 
   Future<void> close() async {
-    final db = _database;
+    final db = _database ?? _sharedDatabase;
     if (db != null) {
       await db.close();
+      if (_sharedDatabase == db) {
+        _sharedDatabase = null;
+      }
       _database = null;
     }
   }

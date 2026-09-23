@@ -95,7 +95,7 @@ This formal test matrix defines required physical and automated device verificat
 ## 8. Evidence Categorization & Hardware Execution Status
 
 ### 1. Evidence Levels
-- **AUTOMATED (Complete)**: 519/519 unit, widget, and state machine tests passing (`flutter test` exit code 0). Complete coverage of offline queue durability, mutation idempotency, network chaos, auth chaos, SQLite recovery, telemetry scrubbing, and security red-team suites.
+- **AUTOMATED (Complete)**: 521/521 unit, widget, and state machine tests passing (`flutter test` exit code 0). Complete coverage of offline queue durability, mutation idempotency, network chaos, auth chaos, SQLite recovery, telemetry scrubbing, and security red-team suites.
 - **EMULATOR (Complete)**: Successful compilation of Android Debug APK (`flutter build apk --debug`) and Production Release App Bundle (`flutter build appbundle --release`).
 - **PHYSICAL DEVICE 1 (Authorized & Validated)**:
   - **Device Hardware**: Xiaomi / POCO X4 Pro 5G (`model:2201116PI`, `device:peux`), Android 13 (API 33).
@@ -108,7 +108,21 @@ This formal test matrix defines required physical and automated device verificat
   - **Authentication & Navigation**: Navigated from Welcome screen to OTP verification, authenticated, and rendered Trips Home (`Hello, Traveler`).
   - **Trip Creation Wizard & Drafts**: Created draft trip ("narasaraopeta" to "Goa", title "holiday"); navigated through Steps 1, 2, and 3; verified field state preservation across navigation.
   - **Battery Optimization Policy**: Complies with standard Android Doze rules; app is not whitelisted from OS power management.
-- **PHYSICAL DEVICE 2 (Pending Connection)**:
-  - Phase 12.5 gate mandates at least 2 physical hardware devices with different Android configurations. Device 2 connection is pending.
+- **PHYSICAL DEVICE 2 (Validated & Issue Resolved)**:
+  - **Device Hardware**: Xiaomi Redmi Note 11S / POCO M4 Pro (`model:2201116TI`), Android 13 (API 33).
+  - **Installation Method**: Physical on-device installation of `app-debug.apk`.
+  - **User Session**: Authenticated as `midhunkota7@gmail.com` with displayName `midhunkota7`.
+  - **Journey Creation Wizard (Step 7 of 7)**: Successfully planned "Trip to Hill", route `Satuluru -> Kodaikanal`, duration 7 days, mode `Bike / Motorcycle`, purpose `Adventure & Trek`, preferences `Relaxed`, `Food & Culture`.
+  - **Draft Save Execution**: Successfully tapped "Save Draft"; verified visible in `Drafts (1)` tab on Trips Home.
+  - **Relogin Defect Analysis & Root Cause**:
+    - Sign-out followed by sign-in previously failed to load the saved draft (`Drafts (0)`) due to two distinct architecture bugs:
+      1. User ID divergence in dev/mock authentication: `signUpWithEmail` generated `dev-user-<timestamp>`, while `signInWithEmail` assigned `dev-user-signed-in`. When logging back in, the query filtered for `dev-user-signed-in` which didn't match the original ID.
+      2. Missing offline-first repository wiring: `tripRepositoryProvider` directly instantiated `SupabaseTripRepository` (transient in-memory cache) rather than `OfflineFirstTripRepository` backed by SQLite `LocalDatabaseService`.
+  - **Resolution Applied**:
+    - Standardized deterministic mock user ID derivation from account email/phone (`dev-user-midhunkota7_gmail_com`).
+    - Initialized SQLite `LocalDatabaseService().init()` at app startup in `main.dart`.
+    - Wired `tripRepositoryProvider` to `OfflineFirstTripRepository` backed by SQLite and `SyncEngine`.
+    - 521/521 automated regression tests passing (`flutter test` exit code 0).
+
 
 

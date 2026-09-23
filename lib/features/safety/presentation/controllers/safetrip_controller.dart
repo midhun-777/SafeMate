@@ -3,15 +3,24 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../core/services/analytics_service.dart';
+import '../../../../core/sync/conflict_resolution_controller.dart' show localDatabaseServiceProvider;
+import '../../../../core/sync/sync_engine.dart' show syncEngineProvider;
 import '../../../auth/presentation/controllers/auth_controller.dart';
 import '../../../trips/domain/models/trip.dart';
+import '../../data/repositories/offline_first_safetrip_repository.dart';
 import '../../data/repositories/supabase_safetrip_repository.dart';
 import '../../domain/models/safetrip_models.dart';
 import '../../domain/repositories/safetrip_repository.dart';
 
 /// Provider for SafeTripRepository.
 final safeTripRepositoryProvider = Provider<SafeTripRepository>((ref) {
-  return SupabaseSafeTripRepository();
+  final localDb = ref.watch(localDatabaseServiceProvider);
+  final syncEngine = ref.watch(syncEngineProvider);
+  return OfflineFirstSafeTripRepository(
+    remoteRepo: SupabaseSafeTripRepository(),
+    localDb: localDb,
+    syncEngine: syncEngine,
+  );
 });
 
 class SafeTripState {
